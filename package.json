@@ -35,7 +35,7 @@
     "js-yaml": "^3.14.0",
     "jsonwebtoken": "0.4.0",
     "minimatch": "^3.0.4",
-    "npm-groovy-lint": "9.0.0",
+    "npm-groovy-lint": "9.3.0",
     "on-finished": "^2.3.0",
     "otplib": "^12.0.1",
     "pdfkit": "^0.11.0",
