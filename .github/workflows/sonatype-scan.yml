@@ -1,0 +1,80 @@
+name: Sonatype SCA Scanning for Security and License Issues
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  SonatypeUrl: "https://iq-smuckers.us1.sonatype-se.com/"
+  SonatypeAppId: "github-jm-smuckers"
+  SonatypeScanTarget: "."
+  ExcludeDirectory: ""
+
+jobs:
+  build:
+    name: Build and Scan Apps
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build project with NPM
+        run: npm install --omit=dev
+
+      - name: Setup maven
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          cache: maven
+          distribution: 'adopt'
+      - name: Build with Maven
+        run: mvn clean install -Dmaven.test.skip=true
+        # working-directory: ${{ matrix.maven-module-folder }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip' # caching pip dependencies
+      - name: Download Python dependencies
+        run: |
+          mkdir pip-modules
+          # pip install -r requirements.txt
+          pip download -r requirements.txt -d pip-modules
+          
+        
+      - name: Sonatype Lifecycle SCA Scan
+        # if: github.repository_owner == 'finos'
+        id: evaluate
+        uses: sonatype/actions/evaluate@v1
+        with:
+          iq-server-url: ${{ env.SonatypeUrl }}
+          username: admin
+          password: admin1234
+          application-id: ${{ env.SonatypeAppId }}
+          stage: "release"
+          scan-targets: ${{ env.SonatypeScanTarget }}
+          module-exclude: ${{ env.ExcludeDirectory }}
+  
+      - name: Save Sonatype SBOM
+        if: steps.evaluate.outputs.scan-id && always() 
+        uses: sonatype/actions/fetch-sbom@v1
+        with:
+          iq-server-url: ${{ env.SonatypeUrl }}
+          username: admin
+          password: admin1234
+          application-id: ${{ env.SonatypeAppId }}
+          scan-id: ${{ steps.evaluate.outputs.scan-id }}
+          sbom-standard: cyclonedx
+          sbom-version: 1.5
+          artifact-name: ${{ env.SonatypeAppId }}-sonatype-bom
+        
+
+
+
+    
