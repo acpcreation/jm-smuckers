@@ -26,3 +26,10 @@ Showcase for 4 major languages:
 4. R (CRAN)
     
     https://help.sonatype.com/en/r--cran--application-analysis.html
+
+
+```
+https://github.com/acpcreation/jm-smuckers
+
+java -jar /nexus-iq-cli-1.184.0-01.jar -s https://iq-smuckers.us1.sonatype-se.com/ -a USERNAME:PASSWORD -t build -i APP-NAME SCAN_TARGET/
+```
