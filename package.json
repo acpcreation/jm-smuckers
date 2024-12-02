@@ -33,7 +33,7 @@
     "is-heroku": "^2.0.0",
     "jquery": "^3.5.1",
     "js-yaml": "^3.14.0",
-    "jsonwebtoken": "0.4.0",
+    "jsonwebtoken": "9.0.0",
     "minimatch": "^3.0.4",
     "npm-groovy-lint": "9.0.0",
     "on-finished": "^2.3.0",
